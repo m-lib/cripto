@@ -14,90 +14,90 @@ int k;
 double exi, exii, exiii;
 
 void inicializar() {
-     exi = 0.6;
-     exii = 0.2;
-     exiii = 0.7001;
+	exi = 0.6;
+	exii = 0.2;
+	exiii = 0.7001;
 }
 
 double f(double xi) {
-       double a, b, c, retorno;
-       a = 2.0/7.0; b = -1.0/7.0; c = 1.0;
-       retorno = (b * xi) + ((0.5 * (a - b)) * (sqrt((xi + c) * (xi + c)) - sqrt((xi - c) * (xi - c))));
+	double a, b, c, retorno;
+	a = 2.0/7.0; b = -1.0/7.0; c = 1.0;
+	retorno = (b * xi) + ((0.5 * (a - b)) * (sqrt((xi + c) * (xi + c)) - sqrt((xi - c) * (xi - c))));
 
-       return retorno;
+	return retorno;
 }
 
 int chave(double xi, double xii, double xiii) {
-    double numero = 0.0;
-    int cont = 0, chave = 0;
+	double numero = 0.0;
+	int cont = 0, chave = 0;
 
-    //logica de geracao de chaves criptograficas
-    numero = (sin(xi*PI) + cos(xii*PI) + tan(xiii*PI));
+	//logica de geracao de chaves criptograficas
+	numero = (sin(xi*PI) + cos(xii*PI) + tan(xiii*PI));
 
-    //converte a chave para um valor inteiro
-    chave = int(numero * 80000000);
+	//converte a chave para um valor inteiro
+	chave = int(numero * 80000000);
 
-    //garante que a chave nao passe de 10.000.000
-    chave = (chave % 10000000);
+	//garante que a chave nao passe de 10.000.000
+	chave = (chave % 10000000);
 
-    //pega o valor absoluto da chave gerada, o que garante que as chaves nao sejam negativas
-    chave = abs(chave);
+	//pega o valor absoluto da chave gerada, o que garante que as chaves nao sejam negativas
+	chave = abs(chave);
 
-    //algumas chaves podem ser menores que 1.000.000 e sao descartadas
-    if (chave > 1000000) {
-       return chave;//retorna a chave
-    } else if (chave > 100000) {
-       return (chave * 10);
-    } else if (chave > 10000) {
-       return (chave * 100);
-    } else if (chave > 1000) {
-       return (chave * 1000);
-    } else if (chave > 100) {
-       return (chave * 10000);
-    } else if (chave > 10) {
-       return (chave * 100000);
-    }
+	//algumas chaves podem ser menores que 1.000.000 e sao descartadas
+	if (chave > 1000000) {
+		return chave;//retorna a chave
+	} else if (chave > 100000) {
+		return (chave * 10);
+	} else if (chave > 10000) {
+		return (chave * 100);
+	} else if (chave > 1000) {
+		return (chave * 1000);
+	} else if (chave > 100) {
+		return (chave * 10000);
+	} else if (chave > 10) {
+		return (chave * 100000);
+	}
 }
 
 int chua(double xi, double xii, double xiii) {
-    exi = xi + ((alfa * (xii - f(xi))) * dt);
-    exii = xii + ((xi - xii + xiii) * dt);
-    exiii = xiii + ((-beta * xii) * dt);
+	exi = xi + ((alfa * (xii - f(xi))) * dt);
+	exii = xii + ((xi - xii + xiii) * dt);
+	exiii = xiii + ((-beta * xii) * dt);
 
-    xi = exi;
-    xii = exii;
-    xiii = exiii;
+	xi = exi;
+	xii = exii;
+	xiii = exiii;
 
-    return chave(xi, xii, xiii);
+	return chave(xi, xii, xiii);
 }
 
 //versao de algoritimo de atkin utilizado para encontrar numeros primos de forma mais eficiente
 int primo(int n) {
-    int k, m, limite;
+	int k, m, limite;
 
-    if ((n == 2) || (n == 3)) {
+	if ((n == 2) || (n == 3)) {
 		return 1;
-    } if ((n < 2) || ((n % 2) == 0) || ((n % 3) == 0)) {
+	} if ((n < 2) || ((n % 2) == 0) || ((n % 3) == 0)) {
 		return 0;
-    }
+	}
 
-    limite = (int) ceil(sqrt (n));
+	limite = (int) ceil(sqrt (n));
 
-    for (k = 1; ; k++) {
+	for (k = 1; ; k++) {
 		m = (6 * k) - 1;
-        if (m > limite) {
+		if (m > limite) {
 			break;
-        } if ((n % m) == 0) {
+		} if ((n % m) == 0) {
 			return 0;
-        }
+		}
 
-        m = (6 * k) + 1;
-        if (m > limite) {
+		m = (6 * k) + 1;
+		if (m > limite) {
 			break;
-        } if ((n % m) == 0) {
+		} if ((n % m) == 0) {
 			return 0;
-        }
-    }
+		}
+	}
 
 	return 1;
 }
@@ -125,21 +125,21 @@ int main(int num, char *parametro[]) {
 		if (opcao.compare("-c") == 0) {
 			ifstream file (parametro[2], ios::in|ios::binary|ios::ate);
 			if (file.is_open()) {
-    			size = file.tellg();
-		    	memblock = new char[size];
-    			file.seekg (0, ios::beg);
+				size = file.tellg();
+				memblock = new char[size];
+				file.seekg (0, ios::beg);
 				file.read (memblock, size);
 
 				for (int i = 0; i < size; i++) {
 					k = chua(exi, exii, exiii);
-    		    	if (primo(k)) {
+					if (primo(k)) {
 						memblock[i] = (int(memblock[i]) - k) % 256;
 					} else {
 						memblock[i] = (int(memblock[i]) + k) % 256;
 					}
 				}
 
-    			file.close();
+				file.close();
 			}
 
 			ofstream out (parametro[2], ios::out|ios::binary|ios::trunc);
@@ -150,23 +150,23 @@ int main(int num, char *parametro[]) {
 
 			cout << "CIFRAGEM COMPLETA!\n";
 		} else if (opcao.compare("-r") == 0) {
-		  	ifstream file (parametro[2], ios::in|ios::binary|ios::ate);
+			ifstream file (parametro[2], ios::in|ios::binary|ios::ate);
 			if (file.is_open()) {
-		    	size = file.tellg();
-		    	memblock = new char[size];
-		    	file.seekg (0, ios::beg);
+				size = file.tellg();
+				memblock = new char[size];
+				file.seekg (0, ios::beg);
 				file.read (memblock, size);
 
 				for (int i = 0; i < size; i++) {
 					k = chua(exi, exii, exiii);
-		        	if (primo(k)) {
+					if (primo(k)) {
 						memblock[i] = int(memblock[i]) + (k % 256);
 					} else {
 						memblock[i] = int(memblock[i]) - (k % 256);
 					}
 				}
 
-		    	file.close();
+				file.close();
 			}
 
 			ofstream out (parametro[2], ios::out|ios::binary|ios::trunc);
@@ -184,6 +184,6 @@ int main(int num, char *parametro[]) {
 		}
 	}
 
-   	return 0;
+	return 0;
 }
 
